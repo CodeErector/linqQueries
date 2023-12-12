@@ -1,0 +1,31 @@
+﻿@page "/addquery3"
+@using linqQueries.Data;
+@using linqQueries.Model;
+@inject AppDbContext _db
+
+
+<h3>Additional Query 3 Solution</h3>
+
+@code {
+    List<Student> students = new List<Student>();
+
+    protected override void OnInitialized()
+    {
+        LoadQuery();
+    }
+
+    void LoadQuery()
+    {
+        var studentsEnrolledInMoreThanTwoClasses = _db.stu
+     .Where(s => s.enrolls.Count() > 2)
+     .Select(s => new { StudentName = s.sname, EnrolledClassesCount = s.enrolls.Count() });
+
+        // Result
+        foreach (var studentInfo in studentsEnrolledInMoreThanTwoClasses)
+        {
+            Console.WriteLine($"Student Name: {studentInfo.StudentName}, Enrolled Classes: {studentInfo.EnrolledClassesCount}");
+        }
+
+        }
+    }
+}

@@ -1,0 +1,87 @@
+﻿@page "/addenroll"
+@using linqQueries.Data;
+@using linqQueries.Model;
+@inject AppDbContext _db
+
+<h3>Enroll</h3>
+
+<EditForm Model="@enroll" OnValidSubmit="@HandleSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <label for="student">Select Student:</label>
+    <InputSelect @bind-Value="enroll.students" class="form-control">
+        <option value="">Select...</option>
+        @foreach (var item in _db.stu.ToList())
+        {
+            <option value="@item.sid">@item.sname</option>
+        }
+    </InputSelect>
+    <br />
+    <label for="class">Select Class:</label>
+    <InputSelect @bind-Value="enroll.classes" class="form-control">
+        <option value="">Select...</option>
+        @foreach (var item in _db.Classes.ToList())
+        {
+            <option value="@item.cid">@item.name</option>
+        }
+    </InputSelect>
+    <br />
+    <button type="submit">Save</button>
+</EditForm>
+
+<table>
+    <tbody>
+        @foreach (var currentEnroll in enrolls)
+        {
+            <tr>
+                <td>@currentEnroll.students</td>
+                <td>@currentEnroll.classes</td>
+                <td><button @onclick="() => EditEnroll(currentEnroll)">Edit</button></td>
+                <td><button @onclick="() => DeleteEnroll(currentEnroll)">Delete</button></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    Enrolled enroll = new Enrolled();
+    List<Enrolled> enrolls = new List<Enrolled>();
+
+    protected override void OnInitialized()
+    {
+        LoadEnroll();
+    }
+
+    void LoadEnroll()
+    {
+        enrolls = _db.Enrolled.ToList();
+    }
+
+    void HandleSubmit()
+    {
+        if (enroll.eid == 0)
+        {
+            _db.Add(enroll);
+        }
+        else
+        {
+            _db.Update(enroll);
+        }
+
+        _db.SaveChanges();
+        enroll = new Enrolled(); // Clear the form after submission
+        LoadEnroll(); // Reload users after submission
+    }
+
+    void EditEnroll(Enrolled currentEnroll)
+    {
+        enroll = currentEnroll;
+    }
+
+    void DeleteEnroll(Enrolled currentEnroll)
+    {
+        _db.Remove(currentEnroll);
+        _db.SaveChanges();
+        LoadEnroll(); // Reload users after deletion
+    }
+}

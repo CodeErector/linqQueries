@@ -1,0 +1,29 @@
+﻿@page "/addquery1"
+@using linqQueries.Data;
+@using linqQueries.Model;
+@inject AppDbContext _db
+
+
+<h3>Additional Query 1 Solution</h3>
+
+@code {
+    List<Student> students = new List<Student>();
+
+    protected override void OnInitialized()
+    {
+        LoadQuery();
+    }
+
+    void LoadQuery()
+    {
+        var studentsNoMarks = _db.stu
+     .Where(s => s.enrolls.Any(e => e.classes.Any(c => c.students.Contains(s))) && s.marks == 0)
+     .Select(s => s.sname);
+
+        // Result
+        foreach (var studentName in studentsNoMarks)
+        {
+            Console.WriteLine($"Student Name: {studentName}");
+        }
+    }
+}

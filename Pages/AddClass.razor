@@ -1,0 +1,94 @@
+﻿@page "/addclass"
+@using linqQueries.Data;
+@using linqQueries.Model;
+@inject AppDbContext _db
+<h3>AddClass</h3>
+
+<EditForm Model="@cls" OnValidSubmit="@HandleSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <label for="name">Name:</label>
+    <InputText id="name" @bind-Value="cls.name" class="form-control" />
+    <br />
+    <label for="roomNo">Room No:</label>
+    <InputNumber id="roomNo" @bind-Value="cls.roomNo" class="form-control" />
+    <br />
+    <label for="fid">Select Teacher:</label>
+    <InputSelect @bind-Value="cls.faculty" class="form-control">
+        <option value="">Select...</option>
+        @foreach (var item in _db.Faculties.ToList())
+        {
+            <option value="@item.fid">@item.fname</option>
+        }
+    </InputSelect>
+    <br />
+    <label for="student">Select Student:</label>
+    <InputSelect @bind-Value="cls.students" class="form-control">
+        <option value="">Select...</option>
+        @foreach (var item in _db.stu.ToList())
+        {
+            <option value="@item.sid">@item.sname</option>
+        }
+    </InputSelect>
+    <br />
+    <button type="submit">Save</button>
+</EditForm>
+
+<table>
+    <tbody>
+        @foreach (var currentClass in clss)
+        {
+            <tr>
+                <td>@currentClass.name</td>
+                <td>@currentClass.roomNo</td>
+                <td>@currentClass.faculty</td>
+                <td>@currentClass.students</td>
+                <td><button @onclick="() => EditClass(currentClass)">Edit</button></td>
+                <td><button @onclick="() => DeleteClass(currentClass)">Delete</button></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    Class cls = new Class();
+    List<Class> clss = new List<Class>();
+
+    protected override void OnInitialized()
+    {
+        LoadClasses();
+    }
+
+    void LoadClasses()
+    {
+        clss = _db.Classes.ToList();
+    }
+
+    void HandleSubmit()
+    {
+        if (cls.cid == 0)
+        {
+            _db.Add(cls);
+        }
+        else
+        {
+            _db.Update(cls);
+        }
+
+        _db.SaveChanges();
+        cls = new Class(); // Clear the form after submission
+        LoadClasses(); // Reload users after submission
+    }
+
+    void EditClass(Class currentClass)
+    {
+        cls = currentClass;
+    }
+
+    void DeleteClass(Class currentClass)
+    {
+        _db.Remove(currentClass);
+        _db.SaveChanges();
+        LoadClasses(); // Reload users after deletion
+    }
+}

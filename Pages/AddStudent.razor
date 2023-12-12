@@ -1,0 +1,98 @@
+﻿@page "/addstudent"
+@using linqQueries.Data;
+@using linqQueries.Model;
+@inject AppDbContext _db
+<h3>AddStudent</h3>
+
+<EditForm Model="@student" OnValidSubmit="@HandleSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <label for="name">Name:</label>
+    <InputText id="name" @bind-Value="student.sname" class="form-control" />
+    <br />
+    <label for="major">Major:</label>
+    <InputText id="major" @bind-Value="student.major" class="form-control" />
+    <br />
+    <label for="standing">Standing:</label>
+    <InputText id="standing" @bind-Value="student.standing" class="form-control" />
+    <br />
+    <label for="fid">Select Teacher:</label>
+    <InputSelect @bind-Value="student.faculty" class="form-control">
+        <option value="">Select...</option>
+        @foreach (var item in _db.Faculties.ToList())
+        {
+            <option value="@item.fid">@item.fname</option>
+        }
+    </InputSelect>
+    <br />
+    <label for="course">Select Course:</label>
+    <InputSelect @bind-Value="student.enrolls" class="form-control">
+        <option value="">Select...</option>
+        @foreach (var item in _db.Enrolled.ToList())
+        {
+            <option value="@item.eid">@item.eid</option>
+        }
+    </InputSelect>
+    <br />
+    <button type="submit">Save</button>
+</EditForm>
+
+<table>
+    <tbody>
+        @foreach (var currentStudent in students)
+        {
+            <tr>
+                <td>@currentStudent.sname</td>
+                <td>@currentStudent.major</td>
+                <td>@currentStudent.standing</td>
+                <td>@currentStudent.faculty</td>
+                <td>@currentStudent.enrolls</td>
+                <td><button @onclick="() => EditStudent(currentStudent)">Edit</button></td>
+                <td><button @onclick="() => DeleteStudent(currentStudent)">Delete</button></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    Student student = new Student();
+    List<Student> students = new List<Student>();
+
+    protected override void OnInitialized()
+    {
+        LoadStudents();
+    }
+
+    void LoadStudents()
+    {
+        students = _db.stu.ToList();
+    }
+
+    void HandleSubmit()
+    {
+        if (student.sid == 0)
+        {
+            _db.Add(student);
+        }
+        else
+        {
+            _db.Update(student);
+        }
+
+        _db.SaveChanges();
+        student = new Student(); // Clear the form after submission
+        LoadStudents(); // Reload users after submission
+    }
+
+    void EditStudent(Student currentStudent)
+    {
+        student = currentStudent;
+    }
+
+    void DeleteStudent(Student currentStudent)
+    {
+        _db.Remove(currentStudent);
+        _db.SaveChanges();
+        LoadStudents(); // Reload users after deletion
+    }
+}
