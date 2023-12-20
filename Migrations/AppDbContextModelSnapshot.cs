@@ -22,6 +22,36 @@ namespace linqQueries.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("ClassStudent", b =>
+                {
+                    b.Property<int>("classescid")
+                        .HasColumnType("int");
+
+                    b.Property<int>("studentssid")
+                        .HasColumnType("int");
+
+                    b.HasKey("classescid", "studentssid");
+
+                    b.HasIndex("studentssid");
+
+                    b.ToTable("ClassStudent");
+                });
+
+            modelBuilder.Entity("EnrolledStudent", b =>
+                {
+                    b.Property<int>("enrollseid")
+                        .HasColumnType("int");
+
+                    b.Property<int>("studentssid")
+                        .HasColumnType("int");
+
+                    b.HasKey("enrollseid", "studentssid");
+
+                    b.HasIndex("studentssid");
+
+                    b.ToTable("EnrolledStudent");
+                });
+
             modelBuilder.Entity("linqQueries.Model.Class", b =>
                 {
                     b.Property<int>("cid")
@@ -127,9 +157,6 @@ namespace linqQueries.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("sid"));
 
-                    b.Property<int?>("Enrolledeid")
-                        .HasColumnType("int");
-
                     b.Property<int>("age")
                         .HasColumnType("int");
 
@@ -147,9 +174,37 @@ namespace linqQueries.Migrations
 
                     b.HasKey("sid");
 
-                    b.HasIndex("Enrolledeid");
-
                     b.ToTable("stu");
+                });
+
+            modelBuilder.Entity("ClassStudent", b =>
+                {
+                    b.HasOne("linqQueries.Model.Class", null)
+                        .WithMany()
+                        .HasForeignKey("classescid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("linqQueries.Model.Student", null)
+                        .WithMany()
+                        .HasForeignKey("studentssid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("EnrolledStudent", b =>
+                {
+                    b.HasOne("linqQueries.Model.Enrolled", null)
+                        .WithMany()
+                        .HasForeignKey("enrollseid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("linqQueries.Model.Student", null)
+                        .WithMany()
+                        .HasForeignKey("studentssid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("linqQueries.Model.Class", b =>
@@ -174,18 +229,6 @@ namespace linqQueries.Migrations
                     b.Navigation("cls");
 
                     b.Navigation("faculty");
-                });
-
-            modelBuilder.Entity("linqQueries.Model.Student", b =>
-                {
-                    b.HasOne("linqQueries.Model.Enrolled", null)
-                        .WithMany("students")
-                        .HasForeignKey("Enrolledeid");
-                });
-
-            modelBuilder.Entity("linqQueries.Model.Enrolled", b =>
-                {
-                    b.Navigation("students");
                 });
 #pragma warning restore 612, 618
         }

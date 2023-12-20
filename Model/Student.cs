@@ -11,5 +11,8 @@ namespace linqQueries.Model
         public string? standing { get; set; }
         public int age { get; set; }
         public int marks { get; set; }
+
+        public virtual IList<Enrolled>? enrolls { get; set; }
+        public virtual IList<Class>? classes { get; set; }
     }
 }

@@ -1,0 +1,123 @@
+﻿@page "/queries"
+@using linqQueries.Data
+@using linqQueries.Model
+@inject AppDbContext _Db
+
+<h3>Query A</h3>
+
+<table>
+    <tbody>
+        @foreach (var item in query1)
+        {
+            <td>@item.name</td>
+            <td>@item.roomNo</td>
+        }
+    </tbody>
+</table>
+
+<h3>Query B</h3>
+
+<table>
+    <tbody>
+        @foreach (var item in query2)
+        {
+        <td>@item.sid</td>
+        <td>@item.major</td>
+        }
+    </tbody>
+</table>
+
+<h3>Query 1 (Reference: c)</h3>
+
+<table>
+    <tbody>
+        @foreach (var item in query3)
+        {
+            <td>@item.sname</td>
+        }
+    </tbody>
+</table>
+
+<h3>Query 2 (Reference: a)</h3>
+
+<table>
+    <tbody>
+        @foreach (var item in query4)
+        {
+        <td>@item.sname</td>
+        }
+    </tbody>
+</table>
+
+<h3>Query 3 (Reference: b)</h3>
+
+<table>
+    <tbody>
+        @foreach (var item in query5)
+        {
+        <td>@item.Major</td>
+        <td>@item.AverageAge</td>
+        }
+    </tbody>
+</table>
+
+@code {
+    List<Class> query1 = new List<Class>();
+    List<Student> query2 = new List<Student>();
+    List<Student> query3 = new List<Student>();
+    List<Student> query4 = new List<Student>();
+    List<StudentSummary> query5 = new List<StudentSummary>();
+
+    protected override void OnInitialized()
+    {
+        LoadQuery();
+    }
+
+    void LoadQuery()
+    {
+        query1 = (from c in _Db.Classes
+                  where c.students.Count <= 100
+                  select new Class
+                      {
+                          name = c.name,
+                          roomNo = c.roomNo
+                      }).ToList();
+
+        query2 = (from s in _Db.stu
+                  where s.classes.All(c => c.Faculty.depid != 22)
+                  select new Student
+                        {
+                            sid = s.sid,
+                            major = s.major
+                        }).ToList();
+
+        query3 = (from s in _Db.stu
+                  where s.classes.Count > 2
+                  select new Student
+                 {
+                     sname = s.sname
+                 }).ToList();
+
+        query4 = (from s in _Db.stu
+                  where s.marks == 0
+                  select new Student
+                  {
+                      sname = s.sname
+                  }).ToList();
+
+        query5 = (from s in _Db.stu
+                   group s by s.major into g
+                   select new StudentSummary
+                   {
+                       Major = g.Key,
+                       AverageAge = g.Average(s => s.age)
+                   }).ToList();
+    }
+
+    public class StudentSummary
+    {
+        public string? Major { get; set; }
+        public double AverageAge { get; set; }
+    }
+
+}

@@ -11,5 +11,6 @@ namespace linqQueries.Model
         public int fid { get; set; }
 
         public virtual Faculty? Faculty { get; set; }
+        public virtual IList<Student>? students { get; set; }
     }
 }
