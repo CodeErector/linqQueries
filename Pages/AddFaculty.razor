@@ -10,27 +10,15 @@
     <label for="name">Name:</label>
     <InputText id="name" @bind-Value="faculty.fname" class="form-control" />
     <br />
-    <label for="depid">DepId:</label>
-    <InputNumber id="depid" @bind-Value="faculty.depid" class="form-control" />
-    <br />
     <label for="standing">Standing:</label>
     <InputText id="standing" @bind-Value="faculty.standing" class="form-control" />
     <br />
-    <label for="course">Select course:</label>
-    <InputSelect @bind-Value="faculty.enroll" class="form-control">
+    <label for="depid">DepId:</label>
+    <InputSelect @bind-Value="faculty.depid" class="form-control">
         <option value="">Select...</option>
-        @foreach (var item in _db.Enrolled.ToList())
+        @foreach (var item in _db.departs.ToList())
         {
-            <option value="@item.eid">@item.eid</option>
-        }
-    </InputSelect>
-    <br />
-    <label for="class">Select Class:</label>
-    <InputSelect @bind-Value="faculty.classes" class="form-control">
-        <option value="">Select...</option>
-        @foreach (var item in _db.Classes.ToList())
-        {
-            <option value="@item.cid">@item.name</option>
+            <option value="@item.depid">@item.dName</option>
         }
     </InputSelect>
     <br />
@@ -42,11 +30,10 @@
         @foreach (var currentFaculty in Faculties)
         {
             <tr>
+                <td>@currentFaculty.fid</td>
                 <td>@currentFaculty.fname</td>
-                <td>@currentFaculty.depid</td>
                 <td>@currentFaculty.standing</td>
-                <td>@currentFaculty.enroll</td>
-                <td>@currentFaculty.classes</td>
+                <td>@currentFaculty.depid</td>
                 <td><button @onclick="() => EditFaculty(currentFaculty)">Edit</button></td>
                 <td><button @onclick="() => DeleteFaculty(currentFaculty)">Delete</button></td>
             </tr>

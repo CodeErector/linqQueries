@@ -14,20 +14,11 @@
     <InputNumber id="roomNo" @bind-Value="cls.roomNo" class="form-control" />
     <br />
     <label for="fid">Select Teacher:</label>
-    <InputSelect @bind-Value="cls.faculty" class="form-control">
+    <InputSelect @bind-Value="cls.fid" class="form-control">
         <option value="">Select...</option>
         @foreach (var item in _db.Faculties.ToList())
         {
             <option value="@item.fid">@item.fname</option>
-        }
-    </InputSelect>
-    <br />
-    <label for="student">Select Student:</label>
-    <InputSelect @bind-Value="cls.students" class="form-control">
-        <option value="">Select...</option>
-        @foreach (var item in _db.stu.ToList())
-        {
-            <option value="@item.sid">@item.sname</option>
         }
     </InputSelect>
     <br />
@@ -39,10 +30,10 @@
         @foreach (var currentClass in clss)
         {
             <tr>
+                <td>@currentClass.cid</td>
                 <td>@currentClass.name</td>
                 <td>@currentClass.roomNo</td>
-                <td>@currentClass.faculty</td>
-                <td>@currentClass.students</td>
+                <td>@currentClass.fid</td>
                 <td><button @onclick="() => EditClass(currentClass)">Edit</button></td>
                 <td><button @onclick="() => DeleteClass(currentClass)">Delete</button></td>
             </tr>

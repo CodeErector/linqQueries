@@ -13,5 +13,6 @@ namespace linqQueries.Data
         public DbSet<Class>? Classes { get; set; }
         public DbSet<Faculty>? Faculties { get; set; }
         public DbSet<Enrolled>? Enrolled { get; set; }
+        public DbSet<Depart>? departs { get; set; }
     }
 }

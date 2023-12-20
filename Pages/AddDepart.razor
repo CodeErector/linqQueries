@@ -1,0 +1,72 @@
+﻿@page "/adddepart"
+@using linqQueries.Data;
+@using linqQueries.Model;
+@inject AppDbContext _db
+
+<h3>Add Depart</h3>
+
+<EditForm Model="@depart" OnValidSubmit="@HandleSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <label for="name">Depart Name:</label>
+    <InputText id="name" @bind-Value="depart.dName" class="form-control" />
+    <br />
+    <button type="submit">Save</button>
+</EditForm>
+
+<table>
+    <tbody>
+        @foreach (var currentClass in departs)
+        {
+            <tr>
+                <td>@currentClass.depid</td>
+                <td>@currentClass.dName</td>
+                <td><button @onclick="() => EditDepart(currentClass)">Edit</button></td>
+                <td><button @onclick="() => DeleteDepart(currentClass)">Delete</button></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    Depart depart = new Depart();
+    List<Depart> departs = new List<Depart>();
+
+    protected override void OnInitialized()
+    {
+        LoadDeparts();
+    }
+
+    void LoadDeparts()
+    {
+        departs = _db.departs.ToList();
+    }
+
+    void HandleSubmit()
+    {
+        if (depart.depid == 0)
+        {
+            _db.Add(depart);
+        }
+        else
+        {
+            _db.Update(depart);
+        }
+
+        _db.SaveChanges();
+        depart = new Depart(); // Clear the form after submission
+        LoadDeparts(); // Reload users after submission
+    }
+
+    void EditDepart(Depart currentClass)
+    {
+        depart = currentClass;
+    }
+
+    void DeleteDepart(Depart currentClass)
+    {
+        _db.Remove(currentClass);
+        _db.SaveChanges();
+        LoadDeparts(); // Reload users after deletion
+    }
+}

@@ -9,7 +9,7 @@
     <DataAnnotationsValidator />
     <ValidationSummary />
     <label for="student">Select Student:</label>
-    <InputSelect @bind-Value="enroll.students" class="form-control">
+    <InputSelect @bind-Value="enroll.sid" class="form-control">
         <option value="">Select...</option>
         @foreach (var item in _db.stu.ToList())
         {
@@ -18,11 +18,20 @@
     </InputSelect>
     <br />
     <label for="class">Select Class:</label>
-    <InputSelect @bind-Value="enroll.classes" class="form-control">
+    <InputSelect @bind-Value="enroll.cid" class="form-control">
         <option value="">Select...</option>
         @foreach (var item in _db.Classes.ToList())
         {
             <option value="@item.cid">@item.name</option>
+        }
+    </InputSelect>
+    <br />
+    <label for="teacher">Select Teacher:</label>
+    <InputSelect @bind-Value="enroll.fid" class="form-control">
+        <option value="">Select...</option>
+        @foreach (var item in _db.Faculties.ToList())
+        {
+            <option value="@item.fid">@item.fname</option>
         }
     </InputSelect>
     <br />
@@ -34,8 +43,10 @@
         @foreach (var currentEnroll in enrolls)
         {
             <tr>
-                <td>@currentEnroll.students</td>
-                <td>@currentEnroll.classes</td>
+                <td>@currentEnroll.eid</td>
+                <td>@currentEnroll.fid</td>
+                <td>@currentEnroll.cid</td>
+                <td>@currentEnroll.sid</td>
                 <td><button @onclick="() => EditEnroll(currentEnroll)">Edit</button></td>
                 <td><button @onclick="() => DeleteEnroll(currentEnroll)">Delete</button></td>
             </tr>

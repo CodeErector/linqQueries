@@ -12,8 +12,8 @@ using linqQueries.Data;
 namespace linqQueries.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20231212145604_linq")]
-    partial class linq
+    [Migration("20231220100448_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,21 +25,6 @@ namespace linqQueries.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("EnrolledStudent", b =>
-                {
-                    b.Property<int>("enrollseid")
-                        .HasColumnType("int");
-
-                    b.Property<int>("studentssid")
-                        .HasColumnType("int");
-
-                    b.HasKey("enrollseid", "studentssid");
-
-                    b.HasIndex("studentssid");
-
-                    b.ToTable("EnrolledStudent");
-                });
-
             modelBuilder.Entity("linqQueries.Model.Class", b =>
                 {
                     b.Property<int>("cid")
@@ -48,10 +33,10 @@ namespace linqQueries.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("cid"));
 
-                    b.Property<int?>("Enrolledeid")
+                    b.Property<int?>("Facultyfid")
                         .HasColumnType("int");
 
-                    b.Property<int?>("facultyfid")
+                    b.Property<int>("fid")
                         .HasColumnType("int");
 
                     b.Property<string>("name")
@@ -62,11 +47,25 @@ namespace linqQueries.Migrations
 
                     b.HasKey("cid");
 
-                    b.HasIndex("Enrolledeid");
-
-                    b.HasIndex("facultyfid");
+                    b.HasIndex("Facultyfid");
 
                     b.ToTable("Classes");
+                });
+
+            modelBuilder.Entity("linqQueries.Model.Depart", b =>
+                {
+                    b.Property<int>("depid")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("depid"));
+
+                    b.Property<string>("dName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("depid");
+
+                    b.ToTable("departs");
                 });
 
             modelBuilder.Entity("linqQueries.Model.Enrolled", b =>
@@ -77,7 +76,26 @@ namespace linqQueries.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("eid"));
 
+                    b.Property<int>("cid")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("clscid")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("facultyfid")
+                        .HasColumnType("int");
+
+                    b.Property<int>("fid")
+                        .HasColumnType("int");
+
+                    b.Property<int>("sid")
+                        .HasColumnType("int");
+
                     b.HasKey("eid");
+
+                    b.HasIndex("clscid");
+
+                    b.HasIndex("facultyfid");
 
                     b.ToTable("Enrolled");
                 });
@@ -90,13 +108,7 @@ namespace linqQueries.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("fid"));
 
-                    b.Property<int?>("Studentsid")
-                        .HasColumnType("int");
-
                     b.Property<int>("depid")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("enrolleid")
                         .HasColumnType("int");
 
                     b.Property<string>("fname")
@@ -106,10 +118,6 @@ namespace linqQueries.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("fid");
-
-                    b.HasIndex("Studentsid");
-
-                    b.HasIndex("enrolleid");
 
                     b.ToTable("Faculties");
                 });
@@ -122,11 +130,17 @@ namespace linqQueries.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("sid"));
 
-                    b.Property<int?>("Classcid")
+                    b.Property<int?>("Enrolledeid")
+                        .HasColumnType("int");
+
+                    b.Property<int>("age")
                         .HasColumnType("int");
 
                     b.Property<string>("major")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("marks")
+                        .HasColumnType("int");
 
                     b.Property<string>("sname")
                         .HasColumnType("nvarchar(max)");
@@ -136,77 +150,45 @@ namespace linqQueries.Migrations
 
                     b.HasKey("sid");
 
-                    b.HasIndex("Classcid");
+                    b.HasIndex("Enrolledeid");
 
                     b.ToTable("stu");
                 });
 
-            modelBuilder.Entity("EnrolledStudent", b =>
-                {
-                    b.HasOne("linqQueries.Model.Enrolled", null)
-                        .WithMany()
-                        .HasForeignKey("enrollseid")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("linqQueries.Model.Student", null)
-                        .WithMany()
-                        .HasForeignKey("studentssid")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("linqQueries.Model.Class", b =>
                 {
-                    b.HasOne("linqQueries.Model.Enrolled", null)
-                        .WithMany("classes")
-                        .HasForeignKey("Enrolledeid");
-
-                    b.HasOne("linqQueries.Model.Faculty", "faculty")
-                        .WithMany("classes")
-                        .HasForeignKey("facultyfid");
-
-                    b.Navigation("faculty");
-                });
-
-            modelBuilder.Entity("linqQueries.Model.Faculty", b =>
-                {
-                    b.HasOne("linqQueries.Model.Student", null)
-                        .WithMany("faculty")
-                        .HasForeignKey("Studentsid");
-
-                    b.HasOne("linqQueries.Model.Enrolled", "enroll")
+                    b.HasOne("linqQueries.Model.Faculty", "Faculty")
                         .WithMany()
-                        .HasForeignKey("enrolleid");
+                        .HasForeignKey("Facultyfid");
 
-                    b.Navigation("enroll");
-                });
-
-            modelBuilder.Entity("linqQueries.Model.Student", b =>
-                {
-                    b.HasOne("linqQueries.Model.Class", null)
-                        .WithMany("students")
-                        .HasForeignKey("Classcid");
-                });
-
-            modelBuilder.Entity("linqQueries.Model.Class", b =>
-                {
-                    b.Navigation("students");
+                    b.Navigation("Faculty");
                 });
 
             modelBuilder.Entity("linqQueries.Model.Enrolled", b =>
                 {
-                    b.Navigation("classes");
-                });
+                    b.HasOne("linqQueries.Model.Class", "cls")
+                        .WithMany()
+                        .HasForeignKey("clscid");
 
-            modelBuilder.Entity("linqQueries.Model.Faculty", b =>
-                {
-                    b.Navigation("classes");
+                    b.HasOne("linqQueries.Model.Faculty", "faculty")
+                        .WithMany()
+                        .HasForeignKey("facultyfid");
+
+                    b.Navigation("cls");
+
+                    b.Navigation("faculty");
                 });
 
             modelBuilder.Entity("linqQueries.Model.Student", b =>
                 {
-                    b.Navigation("faculty");
+                    b.HasOne("linqQueries.Model.Enrolled", null)
+                        .WithMany("students")
+                        .HasForeignKey("Enrolledeid");
+                });
+
+            modelBuilder.Entity("linqQueries.Model.Enrolled", b =>
+                {
+                    b.Navigation("students");
                 });
 #pragma warning restore 612, 618
         }
